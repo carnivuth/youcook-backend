@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 
 const app = express();
-const PORT = 8039;
+const PORT = process.env.API_PORT;
 //dbsetup
 const mysql = require("mysql");
 const connection = mysql.createConnection({
