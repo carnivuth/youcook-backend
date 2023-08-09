@@ -26,7 +26,7 @@ app.get("/recipes", (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) {
       console.log(err);
-      res.send('{"error":"error"}');
+      res.send(JSON.stringify(err));
     } else {
       var result = JSON.stringify(rows);
       console.log(result);
@@ -47,7 +47,7 @@ app.get("/recipes/:id/ingredients", (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) {
       console.log(err);
-      res.send('{"error":"error"}');
+      res.send(JSON.stringify(err));
     } else {
       var result = JSON.stringify(rows);
       console.log(result);
@@ -67,7 +67,7 @@ app.get("/recipes/:id/steps", (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) {
       console.log(err);
-      res.send('{"error":"error"}');
+      res.send(JSON.stringify(err));
     } else {
       var result = JSON.stringify(rows);
       console.log(result);
