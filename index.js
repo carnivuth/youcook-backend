@@ -16,12 +16,33 @@ connection.connect();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+///////////////////HOME
+app.get("/", (req, res) => {
+
+  res.send(JSON.stringify(process.env.APP_NAME));
+});
 
 ///////////////////////RECIPES ROUTE
 
 //get recipes
 app.get("/recipes", (req, res) => {
   var query = "select * from RECIPES";
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.send(JSON.stringify(err));
+    } else {
+      var result = JSON.stringify(rows);
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
+
+//get recipe
+app.get("/recipes/:id", (req, res) => {
+  var query = "select * from RECIPES where RECIPES.id=" + req.params.id;
 
   connection.query(query, (err, rows, fields) => {
     if (err) {
@@ -55,6 +76,7 @@ app.get("/recipes/:id/ingredients", (req, res) => {
     }
   });
 });
+
 //get steps
 app.get("/recipes/:id/steps", (req, res) => {
   var recipe_id = req.params.id;
