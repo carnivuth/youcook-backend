@@ -10,7 +10,7 @@ insert into INGREDIENTS(name)values ("zucchero");
 insert into INGREDIENTS(name)values ("carote");
 insert into INGREDIENTS(name)values ("carote");
 insert into INGREDIENTS(name)values ("carote");
-insert into RECIPES(name)values ("ricetta a");
+insert into RECIPES( name, instructions, description)values ("patate sabbiose",null,"patate al forno con pangrattato");
 insert into QUANTITIES(id_recipe, id_ingredient) values (1,1);
 insert into QUANTITIES(id_recipe, id_ingredient) values (1,2);
 insert into STEPS(name, description)values ("step1","eseguire step1");
