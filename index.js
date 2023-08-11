@@ -51,7 +51,7 @@ app.get("/recipes/:id", (req, res) => {
       console.log(err);
       res.send(JSON.stringify(err));
     } else {
-      var result = JSON.stringify(rows);
+      var result = JSON.stringify(rows[0]);
       console.log(result);
       res.send(result);
     }
