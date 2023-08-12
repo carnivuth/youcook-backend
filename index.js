@@ -58,7 +58,7 @@ app.get("/recipes/:id", (req, res) => {
   });
 });
 
-//get ingredients
+//get recipe ingredients
 app.get("/recipes/:id/ingredients", (req, res) => {
   var recipe_id = req.params.id;
   var query =
@@ -79,7 +79,7 @@ app.get("/recipes/:id/ingredients", (req, res) => {
   });
 });
 
-//get steps
+//get recipe steps
 app.get("/recipes/:id/steps", (req, res) => {
   var recipe_id = req.params.id;
   var query =
@@ -87,6 +87,25 @@ app.get("/recipes/:id/steps", (req, res) => {
     "left join RECIPE_STEPS  on RECIPE_STEPS.id_step = STEPS.id " +
     "where RECIPE_STEPS.id_recipe=" +
     recipe_id;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.send(JSON.stringify(err));
+    } else {
+      var result = JSON.stringify(rows);
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
+
+//get  ingredients
+app.get("/ingredients/:query", (req, res) => {
+  var recipe_query = req.params.query;
+  var query =
+    "select * from INGREDIENTS " +
+    "where INGREDIENTS.name like '%" +recipe_query+"%'";
 
   connection.query(query, (err, rows, fields) => {
     if (err) {
