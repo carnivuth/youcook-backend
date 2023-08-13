@@ -10,7 +10,7 @@ var cors = require("cors");
 app.use(cors());
 
 //bodyparser configuration
-var bodyParser = require('body-parser');
+var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
 // url setup
@@ -159,7 +159,8 @@ app.get("/ingredients/:query", (req, res) => {
 app.listen(process.env.API_PORT, (error) => {
   if (!error)
     console.log(
-      "Server is Successfully Running,and App is listening on port " + process.env.API_PORT
+      "Server is Successfully Running,and App is listening on port " +
+        process.env.API_PORT
     );
   else console.log("Error occurred, server can't start", error);
 });
