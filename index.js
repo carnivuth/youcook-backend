@@ -11,7 +11,8 @@ app.use(cors());
 
 //bodyparser configuration
 var bodyParser = require("body-parser");
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
+app.use(express.json());
 
 // url setup
 app.use(express.urlencoded({ extended: true }));
@@ -25,8 +26,6 @@ const connection = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 connection.connect();
-
-//app.use(express.json());
 
 ///////////////MAIN LOGIC
 
@@ -121,18 +120,64 @@ app.post("/recipes/new", (req, res) => {
     recipe.description +
     "','" +
     recipe.instructions +
-    "',)";
+    "')";
   connection.query(query, (err, rows, fields) => {
     if (err) {
       console.log(err);
       res.send(JSON.stringify(err));
     } else {
       var result = JSON.stringify(rows);
+      recipe_id = rows.insertId;
+      recipe.ingredients.forEach((element) => {
+        result = addIngredient(element, recipe_id);
+      });
       console.log(result);
       res.send(result);
     }
   });
 });
+function addIngredient(element, recipe_id) {
+  var query = "select id from  INGREDIENTS where name='" + element.name + "'";
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      return err;
+    } else {
+      //check for existance of ingredient
+      if (rows.length == 0) {
+        //create ingredient
+        var query =
+          "insert into INGREDIENTS(name) values('" + element.name + "')";
+        connection.query(query, (err, rows, fields) => {
+          if (err) {
+            return err;
+          } else {
+            return createRelationWithIngredient(recipe_id,rows.insertId,element.quantity);
+          }
+        });
+      } else {
+        return createRelationWithIngredient(recipe_id,rows[0].id,element.quantity);
+      }
+    }
+  });
+}
+//create relation with existing ingredient
+function createRelationWithIngredient(recipe_id, ingredient_id, quantity) {
+  var query =
+    "insert into QUANTITIES(id_recipe,id_ingredient,quantity) values(" +
+    recipe_id +
+    "," +
+    ingredient_id +
+    ",'" +
+    quantity +
+    "')";
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      return err;
+    } else {
+      return rows;
+    }
+  });
+}
 
 // INGREDIENTS ROUTE
 //get  ingredients
