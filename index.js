@@ -1,11 +1,22 @@
-require("dotenv").config();
+//express initialization
 const express = require("express");
-
 const app = express();
-var cors = require('cors');
+
+//dotenv config
+require("dotenv").config();
+
+//cors config
+var cors = require("cors");
 app.use(cors());
-const PORT = process.env.API_PORT;
-//dbsetup
+
+//bodyparser configuration
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+
+// url setup
+app.use(express.urlencoded({ extended: true }));
+
+//db setup
 const mysql = require("mysql");
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -13,14 +24,14 @@ const connection = mysql.createConnection({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
-
 connection.connect();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+//app.use(express.json());
+
+///////////////MAIN LOGIC
+
 ///////////////////HOME
 app.get("/", (req, res) => {
-
   res.send(JSON.stringify(process.env.APP_NAME));
 });
 
@@ -100,12 +111,38 @@ app.get("/recipes/:id/steps", (req, res) => {
   });
 });
 
+//create new recipe
+app.post("/recipes/new", (req, res) => {
+  var recipe = req.body;
+  var query =
+    "insert into RECIPES (name,description,instructions) values ('" +
+    recipe.name +
+    "','" +
+    recipe.description +
+    "','" +
+    recipe.instructions +
+    "',)";
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.send(JSON.stringify(err));
+    } else {
+      var result = JSON.stringify(rows);
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
+
+// INGREDIENTS ROUTE
 //get  ingredients
 app.get("/ingredients/:query", (req, res) => {
   var recipe_query = req.params.query;
   var query =
     "select * from INGREDIENTS " +
-    "where INGREDIENTS.name like '%" +recipe_query+"%'";
+    "where INGREDIENTS.name like '" +
+    recipe_query +
+    "%'";
 
   connection.query(query, (err, rows, fields) => {
     if (err) {
@@ -119,10 +156,10 @@ app.get("/ingredients/:query", (req, res) => {
   });
 });
 
-app.listen(PORT, (error) => {
+app.listen(process.env.API_PORT, (error) => {
   if (!error)
     console.log(
-      "Server is Successfully Running,and App is listening on port " + PORT
+      "Server is Successfully Running,and App is listening on port " + process.env.API_PORT
     );
   else console.log("Error occurred, server can't start", error);
 });
