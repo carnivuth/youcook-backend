@@ -1,5 +1,5 @@
 //get recipes
-module.exports= function (app,connection) {
+module.exports = function (app, connection) {
   app.get("/recipes", (req, res) => {
     var query = "select * from RECIPES";
 
@@ -99,6 +99,51 @@ module.exports= function (app,connection) {
       }
     });
   });
+
+  //remove recipe
+  app.delete("/recipes/:id", (req, res) => {
+    var recipe_id = req.params.id;
+    var query =
+      "select id_ingredient from QUANTITIES where id_recipe=" +
+      recipe_id;
+
+    connection.query(query, (err, rows, fields) => {
+      if (err) {
+        console.log(err);
+        res.send(JSON.stringify(err));
+      } else {
+        rows.forEach((element) => {
+          removeReletion(recipe_id, element.id_ingredient);
+        });
+        var query =
+      "delete from RECIPES " +
+      "where id=" +
+      recipe_id;
+      connection.query(query, (err, rows, fields) => {
+        if (err) {
+          console.log(err);
+        res.send(JSON.stringify(err));
+        } else {
+          console.log(rows);
+          res.send(JSON.stringify(rows));
+        }
+      });
+      }
+    });
+  });
+  function removeReletion(recipe_id, id_ingredient) {
+    var query =
+      "delete from QUANTITIES where id_recipe="+recipe_id+" and id_ingredient="+id_ingredient;
+
+    connection.query(query, (err, rows, fields) => {
+      if (err) {
+        return JSON.stringify(err);
+      } else {
+        return JSON.stringify(rows);
+      }
+    });
+  }
+
   //add ingredient to a recipe
   function addIngredient(element, recipe_id) {
     var query = "select id from  INGREDIENTS where name='" + element.name + "'";
@@ -150,4 +195,4 @@ module.exports= function (app,connection) {
       }
     });
   }
-}
+};
