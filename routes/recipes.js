@@ -104,8 +104,7 @@ module.exports = function (app, connection) {
   app.delete("/recipes/:id", (req, res) => {
     var recipe_id = req.params.id;
     var query =
-      "select id_ingredient from QUANTITIES where id_recipe=" +
-      recipe_id;
+      "select id_ingredient from QUANTITIES where id_recipe=" + recipe_id;
 
     connection.query(query, (err, rows, fields) => {
       if (err) {
@@ -115,31 +114,74 @@ module.exports = function (app, connection) {
         rows.forEach((element) => {
           removeReletion(recipe_id, element.id_ingredient);
         });
-        var query =
-      "delete from RECIPES " +
-      "where id=" +
-      recipe_id;
-      connection.query(query, (err, rows, fields) => {
-        if (err) {
-          console.log(err);
-        res.send(JSON.stringify(err));
-        } else {
-          console.log(rows);
-          res.send(JSON.stringify(rows));
-        }
-      });
+        var query = "delete from RECIPES " + "where id=" + recipe_id;
+        connection.query(query, (err, rows, fields) => {
+          if (err) {
+            console.log(err);
+            res.send(JSON.stringify(err));
+          } else {
+            console.log(rows);
+            res.send(JSON.stringify(rows));
+          }
+        });
       }
     });
   });
   function removeReletion(recipe_id, id_ingredient) {
     var query =
-      "delete from QUANTITIES where id_recipe="+recipe_id+" and id_ingredient="+id_ingredient;
+      "delete from QUANTITIES where id_recipe=" +
+      recipe_id +
+      " and id_ingredient=" +
+      id_ingredient;
 
     connection.query(query, (err, rows, fields) => {
       if (err) {
         return JSON.stringify(err);
       } else {
         return JSON.stringify(rows);
+      }
+    });
+  }
+  //update recipe
+  app.put("/recipes/:id", (req, res) => {
+    var recipe_id = req.params.id;
+    var recipe = req.body;
+    var query =
+      "update RECIPES set name='" +
+      recipe.name +
+      "', instructions='" +
+      recipe.instructions +
+      "', description='" +
+      recipe.description +
+      "' where id=" +
+      recipe_id;
+    connection.query(query, (err, rows, fields) => {
+      if (err) {
+        console.log(err);
+        res.send(JSON.stringify(err));
+      } else {
+        //update relation with ingredients
+        recipe.ingredients.forEach((element) => {
+          var result = updateRelation(recipe_id, element);
+        });
+      }
+    });
+  });
+  function updateRelation(recipe_id, ingredient) {
+    var query =
+      "update QUANTITIES set quantity='" +
+      ingredient.quantity +
+      "' where id_ingredient=" +
+      ingredient.id +
+      " and id_recipe=" +
+      recipe_id;
+    connection.query(query, (err, rows, fields) => {
+      if (err) {
+        console.log(err);
+        return err;
+      } else {
+        //update relation with ingredients
+        return rows;
       }
     });
   }
