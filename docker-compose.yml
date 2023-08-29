@@ -49,4 +49,4 @@ volumes:
   db: 
 networks:
   yc-backend:
-    driver: bridge
+    name: yc-backend
