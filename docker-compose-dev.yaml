@@ -5,9 +5,11 @@ services:
 
   #youcook database service
   youcook-db:
-    image: mysql
+    build: 
+      dockerfile: migrations/Dockerfile
     restart: unless-stopped
     environment:
+      # DB PARAMETERS, CUSTOMIZE AS YOU LIKE
       MYSQL_DATABASE: youcook-db 
       MYSQL_ROOT_PASSWORD: youcook-db
       MYSQL_PASSWORD: youcook-db
@@ -23,7 +25,6 @@ services:
     
     volumes:
       - db:/var/lib/mysql
-      - ./migrations:/docker-entrypoint-initdb.d
       
     networks:
       - yc-backend
