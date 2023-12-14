@@ -1,12 +1,11 @@
-name: build docker container
+name: build youcook-db
 run-name: ${{ github.actor }} is creating the new docker release of the container
 on:
   push:
     branches:
       - 'main'
-    paths-ignore:
-      - "notes/**"
-      - ".github/**"
+    paths:
+      - "migrations/**"
 
 jobs:
   build_and_push_container:
@@ -29,4 +28,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: carnivuth/youcook-backend:latest
+          tags: carnivuth/youcook-db:latest
